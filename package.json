@@ -1,0 +1,27 @@
+{
+  "name": "platzimovies",
+  "version": "1.0.0",
+  "description": "Una aplicación de películas hecha como resultado del Curso Práctico de Consumo de API Rest con Javascript de Platzi (haciendo uso de la The Movie Database API).",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/v-Miguel-v/PlatziMovies.git"
+  },
+  "keywords": [
+    "platzi-course",
+    "javascript",
+    "html",
+    "css",
+    "api-rest",
+    "tmdb-api"
+  ],
+  "author": "Miguel Velásquez <vmiguel.xy@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/v-Miguel-v/PlatziMovies/issues"
+  },
+  "homepage": "https://github.com/v-Miguel-v/PlatziMovies#readme"
+}
