@@ -1,13 +1,21 @@
 "use strict";
-const API = "https://api.themoviedb.org/3";
-const API_KEY = "42ab15e6157c1171ff8cab144d9bb023";
+
+const api = axios.create({
+	baseURL: "https://api.themoviedb.org/3",
+	headers: {
+		"Content-Type": "application/json;charset=utf-8"
+	},
+	params: {
+		api_key: "42ab15e6157c1171ff8cab144d9bb023"
+	}
+});
+
 
 // Load Preview Trending Movies.
 const PREVIEW_TRENDING_MOVIES = document.querySelector("#trendingPreview .trendingPreview-movieList");
 async function loadPreviewTrendingMovies() {
 	try {
-		const response = await fetch(`${API}/trending/movie/day?api_key=${API_KEY}`);
-		const data = await response.json();
+		const { data } = await api("trending/movie/day");
 		const movies = data.results;
 		movies.forEach(movie => {
 			const movieContainer = document.createElement("div");
@@ -23,7 +31,6 @@ async function loadPreviewTrendingMovies() {
 		});
 		
 		console.group("Respuestas del Servidor (GET Preview Trending Movies)");
-			console.log(response);
 			console.log(data);
 		console.groupEnd();
 		
@@ -40,8 +47,7 @@ loadPreviewTrendingMovies();
 const PREVIEW_CATEGORIES = document.querySelector("#categoriesPreview .categoriesPreview-list");
 async function loadPreviewCategories() {
 	try {
-		const response = await fetch(`${API}/genre/movie/list?api_key=${API_KEY}`);
-		const data = await response.json();
+		const { data } = await api("genre/movie/list");
 		const categories = data.genres;
 		categories.forEach(category => {
 			const categoryContainer = document.createElement("div");
@@ -59,7 +65,6 @@ async function loadPreviewCategories() {
 		});
 		
 		console.group("Respuestas del Servidor (GET Preview Categories)");
-			console.log(response);
 			console.log(data);
 		console.groupEnd();
 		
