@@ -19,8 +19,8 @@
     <h1 class="header-title header-title--categoryView inactive">Acción</h1>
 
     <form id="searchForm" class="header-searchForm">
-      <input type="text" placeholder="Vengadores" />
-      <button>🔍</button>
+      <input type="text" placeholder="Buscar" />
+      <button id="searchBtn">🔍</button>
     </form>
   </header>
 
@@ -60,29 +60,17 @@
   </section>
 
   <section id="genericList" class="genericList-container inactive">
-    <div class="movie-container">
+    <!--
+	
+	<div class="movie-container">
       <img
         src="https://image.tmdb.org/t/p/w300/adOzdWS35KAo21r9R4BuFCkLer6.jpg"
         class="movie-img"
         alt="Nombre de la película"
       />
     </div>
-
-    <div class="movie-container">
-      <img
-        src="https://image.tmdb.org/t/p/w300/adOzdWS35KAo21r9R4BuFCkLer6.jpg"
-        class="movie-img"
-        alt="Nombre de la película"
-      />
-    </div>
-
-    <div class="movie-container">
-      <img
-        src="https://image.tmdb.org/t/p/w300/adOzdWS35KAo21r9R4BuFCkLer6.jpg"
-        class="movie-img"
-        alt="Nombre de la película"
-      />
-    </div>
+	
+	-->
   </section>
 
   <section id="movieDetail" class="movieDetail-container inactive">
@@ -137,9 +125,11 @@
     </article>
   </section>
 
-  <footer>Hecho con amor en Platzi por @juandc</footer>
+  <footer>Diseño y estética hecho por @juandc</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>  
   <script src="./src/main.js"></script>
+  <script src="./src/nodes.js"></script>
+  <script src="./src/navigation.js"></script>
 </body>
 </html>

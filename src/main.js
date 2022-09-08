@@ -10,25 +10,55 @@ const api = axios.create({
 	}
 });
 
+// Helpers.
 
-// Load Preview Trending Movies.
-const PREVIEW_TRENDING_MOVIES = document.querySelector("#trendingPreview .trendingPreview-movieList");
-async function loadPreviewTrendingMovies() {
+function createMovies(movies, container) {
+	container.innerHTML = "";
+	
+	movies.forEach(movie => {
+		const movieContainer = document.createElement("div");
+			movieContainer.classList.add("movie-container");
+		
+		const movieImg = document.createElement("img");
+			movieImg.classList.add("movie-img");
+			movieImg.setAttribute("alt", movie.title);
+			movieImg.setAttribute("src", `https://image.tmdb.org/t/p/w300/${movie.poster_path}`);
+			
+		movieContainer.appendChild(movieImg);
+		container.appendChild(movieContainer);
+	});
+}
+
+function createCategories(categories, container) {
+	container.innerHTML = "";
+	
+	categories.forEach(category => {
+		const categoryContainer = document.createElement("div");
+			categoryContainer.classList.add("category-container");
+		
+		const categoryTitle = document.createElement("h3");
+			categoryTitle.classList.add("category-title");
+			categoryTitle.setAttribute("id", `id${category.id}`);
+			categoryTitle.addEventListener("click", () => {
+				location.hash = `#category=${category.id}-${category.name}`;
+			});
+		
+		const categoryTitleText = document.createTextNode(category.name);				
+			
+		categoryTitle.appendChild(categoryTitleText);
+		categoryContainer.appendChild(categoryTitle);
+		container.appendChild(categoryContainer);
+	});
+}
+
+
+// Get Preview Trending Movies.
+async function getPreviewTrendingMovies() {
 	try {
+		trendingMoviesPreviewList.innerHTML = "";
 		const { data } = await api("trending/movie/day");
 		const movies = data.results;
-		movies.forEach(movie => {
-			const movieContainer = document.createElement("div");
-				movieContainer.classList.add("movie-container");
-			
-			const movieImg = document.createElement("img");
-				movieImg.classList.add("movie-img");
-				movieImg.setAttribute("alt", movie.title);
-				movieImg.setAttribute("src", `https://image.tmdb.org/t/p/w300/${movie.poster_path}`);
-				
-			movieContainer.appendChild(movieImg);
-			PREVIEW_TRENDING_MOVIES.appendChild(movieContainer);
-		});
+		createMovies(movies, trendingMoviesPreviewList);
 		
 		console.group("Respuestas del Servidor (GET Preview Trending Movies)");
 			console.log(data);
@@ -41,28 +71,13 @@ async function loadPreviewTrendingMovies() {
 		alert("Ocurrió un Error en el GET del Preview de las Películas en Tendencia.");
 	}
 }
-loadPreviewTrendingMovies();
 
-// Load Preview Categories.
-const PREVIEW_CATEGORIES = document.querySelector("#categoriesPreview .categoriesPreview-list");
-async function loadPreviewCategories() {
+// Get Preview Categories.
+async function getPreviewCategories() {
 	try {
 		const { data } = await api("genre/movie/list");
 		const categories = data.genres;
-		categories.forEach(category => {
-			const categoryContainer = document.createElement("div");
-				categoryContainer.classList.add("category-container");
-			
-			const categoryTitle = document.createElement("h3");
-				categoryTitle.classList.add("category-title");
-				categoryTitle.setAttribute("id", `id${category.id}`);
-			
-			const categoryTitleText = document.createTextNode(category.name);				
-				
-			categoryTitle.appendChild(categoryTitleText);
-			categoryContainer.appendChild(categoryTitle);
-			PREVIEW_CATEGORIES.appendChild(categoryContainer);
-		});
+		createCategories(categories, categoriesPreviewList);
 		
 		console.group("Respuestas del Servidor (GET Preview Categories)");
 			console.log(data);
@@ -75,4 +90,23 @@ async function loadPreviewCategories() {
 		alert("Ocurrió un Error en el GET del Preview de las Categorías.");
 	}
 }
-loadPreviewCategories();
+
+// Get Movies By Category.
+async function getMoviesByCategory(id) {
+	try {
+		genericSection.innerHTML = "";
+		const { data } = await api(`discover/movie?with_genres=${id}`);
+		const movies = data.results;
+		createMovies(movies, genericSection);
+		
+		console.group("Respuestas del Servidor (GET Movies By Category)");
+			console.log(data);
+		console.groupEnd();
+		
+	} catch (error) {
+		console.group("Error (GET Movies By Category)");
+			console.error(error);
+		console.groupEnd();
+		alert("Ocurrió un Error en el GET de las Películas por Categoría.");
+	}
+}
