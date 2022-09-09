@@ -1,6 +1,6 @@
 "use strict";
 
-searchFormBtn.addEventListener("click", () => {location.hash = `#search=${searchFormInput.value}`});
+searchFormBtn.addEventListener("click", () => {location.hash = `#search=${searchFormInput.value.trim()}`});
 trendingBtn.addEventListener("click", () => {location.hash = "#trends"});
 arrowBtn.addEventListener("click", goBack);
 
@@ -12,7 +12,7 @@ function pageNavigation() {
 	if (location.hash === "#trends") {
 		navigateToTrendingPage();
 	} else if (location.hash.startsWith("#search=")) {
-		searchFormInput.value = location.hash.split("=")[1];
+		searchFormInput.value = decodeURI(location.hash.split("=")[1]);
 		navigateToSearchPage();
 	} else if (location.hash.startsWith("#movie=")) {
 		navigateToMovieDetailsPage();
@@ -70,13 +70,12 @@ function navigateToCategoriesPage() {
 	
 	const selectedCategory = location.hash.split("=")[1];
 	const [categoryId, categoryName] = selectedCategory.split("-");
-	
 	headerCategoryTitle.innerText = categoryName;
 	getMoviesByCategory(categoryId);
 }
 
 function navigateToMovieDetailsPage() {
-	console.log("Se cargó la vista de Detalles de una Película");
+	console.log("Se cargó la vista de Detalles de una Película.");
 	
 	headerSection.classList.add("header-container--long");
 	// headerSection.style.background = "";
@@ -90,6 +89,10 @@ function navigateToMovieDetailsPage() {
 	categoriesPreviewSection.classList.add("inactive");
 	genericSection.classList.add("inactive");
 	movieDetailSection.classList.remove("inactive");
+	
+	const selectedMovie = location.hash.split("=")[1];
+	const [movieId, movieName] = selectedMovie.split("-");
+	getMovieById(movieId);
 }
 
 function navigateToSearchPage() {
@@ -110,7 +113,7 @@ function navigateToSearchPage() {
 	
 	headerCategoryTitle.textContent = "Búsqueda";
 	const searchedTerm = location.hash.split("=")[1];
-	getMoviesBySearch(searchedTerm);
+	getMoviesBySearch(searchedTerm.trim());
 }
 
 function navigateToTrendingPage() {
@@ -128,6 +131,9 @@ function navigateToTrendingPage() {
 	categoriesPreviewSection.classList.add("inactive");
 	genericSection.classList.remove("inactive");
 	movieDetailSection.classList.add("inactive");
+	
+	headerCategoryTitle.textContent = "Tendencias";
+	getTrendingMovies();
 }
 
 function navigateTo404Page() {
