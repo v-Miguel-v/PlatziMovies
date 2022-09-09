@@ -1,31 +1,40 @@
 "use strict";
 
-searchFormBtn.addEventListener("click", () => {location.hash = "#search="});
+searchFormBtn.addEventListener("click", () => {location.hash = `#search=${searchFormInput.value}`});
 trendingBtn.addEventListener("click", () => {location.hash = "#trends"});
-arrowBtn.addEventListener("click", () => {location.hash = "#home"});
+arrowBtn.addEventListener("click", goBack);
 
 window.addEventListener("DOMContentLoaded", pageNavigation, false);
 window.addEventListener("hashchange", pageNavigation, false);
+let navigationHistory = [];
 
-function pageNavigation() {
-	if (location.hash.startsWith("#trends")) {
+function pageNavigation() {	
+	if (location.hash === "#trends") {
 		navigateToTrendingPage();
 	} else if (location.hash.startsWith("#search=")) {
+		searchFormInput.value = location.hash.split("=")[1];
 		navigateToSearchPage();
 	} else if (location.hash.startsWith("#movie=")) {
 		navigateToMovieDetailsPage();
 	} else if (location.hash.startsWith("#category=")) {
 		navigateToCategoriesPage();
-	} else {
+	} else if (location.hash === "") {
+		location.hash = "#home";
+	} else if (location.hash === "#home") {
 		navigateToHomePage();
+		searchFormInput.value = "";
+	} else {
+		navigateTo404Page();
 	}
 	
 	document.body.scrollTop = 0;
 	document.documentElement.scrollTop = 0;
+	saveNavigationHistory();
 }
 
 function navigateToHomePage() {
 	console.log("Se cargó la vista del Home.");
+	
 	headerSection.classList.remove("header-container--long");
 	headerSection.style.background = "";
 	arrowBtn.classList.add("inactive");
@@ -98,6 +107,10 @@ function navigateToSearchPage() {
 	categoriesPreviewSection.classList.add("inactive");
 	genericSection.classList.remove("inactive");
 	movieDetailSection.classList.add("inactive");
+	
+	headerCategoryTitle.textContent = "Búsqueda";
+	const searchedTerm = location.hash.split("=")[1];
+	getMoviesBySearch(searchedTerm);
 }
 
 function navigateToTrendingPage() {
@@ -116,3 +129,29 @@ function navigateToTrendingPage() {
 	genericSection.classList.remove("inactive");
 	movieDetailSection.classList.add("inactive");
 }
+
+function navigateTo404Page() {
+	
+}
+
+// Navigation History
+
+function saveNavigationHistory() {
+	navigationHistory.push(location.hash);
+	const lastPage = navigationHistory.length - 1;
+	if (navigationHistory[lastPage] === "#home") navigationHistory = ["#home"];
+}
+
+function goBack() {
+	navigationHistory.pop();
+	
+	if (navigationHistory.length === 0) {
+		location.hash = "#home";
+	} else {
+		const lastPage = navigationHistory.length - 1;
+		location.hash = navigationHistory[lastPage];
+		navigationHistory.pop();
+	}
+}
+
+

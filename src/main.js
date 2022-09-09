@@ -13,8 +13,6 @@ const api = axios.create({
 // Helpers.
 
 function createMovies(movies, container) {
-	container.innerHTML = "";
-	
 	movies.forEach(movie => {
 		const movieContainer = document.createElement("div");
 			movieContainer.classList.add("movie-container");
@@ -108,5 +106,25 @@ async function getMoviesByCategory(id) {
 			console.error(error);
 		console.groupEnd();
 		alert("Ocurrió un Error en el GET de las Películas por Categoría.");
+	}
+}
+
+// Get Movies By Search.
+async function getMoviesBySearch(searchedTerm) {
+	try {
+		genericSection.innerHTML = "";
+		const { data } = await api(`search/movie?query=${searchedTerm}`);
+		const movies = data.results;
+		createMovies(movies, genericSection);
+		
+		console.group("Respuestas del Servidor (GET Movies By Search)");
+			console.log(data);
+		console.groupEnd();
+		
+	} catch (error) {
+		console.group("Error (GET Movies By Search)");
+			console.error(error);
+		console.groupEnd();
+		alert("Ocurrió un Error en el GET de las Películas por Búsqueda.");
 	}
 }
