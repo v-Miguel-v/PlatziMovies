@@ -10,12 +10,40 @@
   --purple-dark-1: #3E0F64;
   --purple-dark-2: #2A0646;
 
-  --yellow: #EECC75;
+/*
+  --yellow: #ff6961;
   --green: #CAD297;
-  --aqua: #B7EAC5;
   --lightBlue: #A2EEE5;
   --darkBlue: #8EA2EA;
   --red: #F09D9D;
+*/  
+  
+  --pale-green: #cff6c8;
+  --green: #77dd77;
+  --dark-green: #2d8f2f;
+  
+  --blue: #84b6f4;
+  --dark-blue: #336ca5;
+  
+  --red: #ff6961;
+  --dark-red: #840007;
+  
+  --yellow: #ff6961;
+  --dark-yellow: #eecc75;
+  
+  --cream: #ffda9e;
+  --dark-cream: #cdab72;
+  
+  --pale-purple: #f1e3e9;
+  --purple: #f0c4d7;
+  --dark-purple: #643d50;
+  
+  --aqua: #4afde7;
+  --dark-aqua: #008e7c;
+  
+  --pinky: #c167e1;
+  --goldy: #ffdc1c;
+  --reder: #f20f3a;
 
   --font-family-titles: 'Dosis', sans-serif;
   --font-family-text: 'Red Hat Display', sans-serif;
@@ -124,7 +152,7 @@ button {
 }
 
 .header-container--long {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.35) 19.27%, rgba(0, 0, 0, 0) 29.17%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.35) 19.27%, rgba(0, 0, 0, 0) 29.17%), #5c218a;
   background-size: cover !important;
   height: 480px;
   position: fixed;
@@ -219,8 +247,9 @@ button {
   margin-bottom: 8px;
   cursor: pointer;
   white-space: nowrap;
-  overflow: hidden;
+  /*overflow: hidden;*/
   text-overflow: ellipsis;
+  --idColor: gray;
 }
 
 .category-title::before {
@@ -233,25 +262,25 @@ button {
   width: 8px;
   height: 8px;
 }
-#id28 { --idColor: var(--yellow); }
-#id12 { --idColor: var(--red); }
-#id16 { --idColor: var(--green); }
-#id35 { --idColor: var(--lightBlue); }
-#id80 { --idColor: var(--darkBlue); }
-#id99 { --idColor: var(--purple-dark-1); }
-#id18 { --idColor: var(--purple-medium-1); }
-#id10751 { --idColor: var(--yellow); }
-#id14 { --idColor: var(--red); }
-#id36 { --idColor: var(--green); }
-#id27 { --idColor: var(--lightBlue); }
-#id10402 { --idColor: var(--darkBlue); }
-#id9648 { --idColor: var(--purple-dark-1); }
-#id10749 { --idColor: var(--purple-medium-1); }
-#id878 { --idColor: var(--yellow); }
-#id10770 { --idColor: var(--red); }
-#id53 { --idColor: var(--green); }
-#id10752 { --idColor: var(--lightBlue); }
-#id37 { --idColor: var(--darkBlue); }
+#id28 { --idColor: var(--dark-blue); }
+#id12 { --idColor: var(--goldy); }
+#id16 { --idColor: var(--aqua); }
+#id35 { --idColor: var(--pale-green); }
+#id80 { --idColor: var(--pale-purple); }
+#id99 { --idColor: var(--cream); }
+#id18 { --idColor: var(--yellow); }
+#id10751 { --idColor: var(--green); }
+#id14 { --idColor: var(--pinky); }
+#id36 { --idColor: var(--dark-cream); }
+#id27 { --idColor: var(--dark-purple); }
+#id10402 { --idColor: var(--dark-green); }
+#id9648 { --idColor: var(--purple-dark-2); }
+#id10749 { --idColor: var(--reder); }
+#id878 { --idColor: var(--blue); }
+#id10770 { --idColor: var(--dark-yellow); }
+#id53 { --idColor: var(--purple); }
+#id10752 { --idColor: var(--dark-red); }
+#id37 { --idColor: var(--dark-aqua); }
 
 
 /* Generic List (search, trending & category) */
@@ -275,6 +304,7 @@ button {
 
 /* Movie Detail */
 .movieDetail-container {
+  width: 100%;
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
   padding: 32px 24px;

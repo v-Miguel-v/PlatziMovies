@@ -70,7 +70,7 @@ function navigateToCategoriesPage() {
 	
 	const selectedCategory = location.hash.split("=")[1];
 	const [categoryId, categoryName] = selectedCategory.split("-");
-	headerCategoryTitle.innerText = categoryName;
+	headerCategoryTitle.innerText = decodeURI(categoryName);
 	getMoviesByCategory(categoryId);
 }
 

@@ -13,6 +13,8 @@ const api = axios.create({
 // Helpers.
 
 function createMovies(movies, container) {
+	container.innerHTML = "";
+	
 	movies.forEach(movie => {
 		const movieContainer = document.createElement("div");
 			movieContainer.classList.add("movie-container");
@@ -28,10 +30,18 @@ function createMovies(movies, container) {
 	});
 }
 
-function createCategories(categories, container) {
+async function createCategories(categoriesInEnglish, container) {
+
+	// Translation
+	const wordsInEnglish = categoriesInEnglish.map(category => category.name).join(" - ");;
+	const translationData = await translation.request(textToTranslate(wordsInEnglish));
+	const wordsInSpanish = translationData.data.data.translations.translatedText.split(" - ");
+	const categoriesInSpanish = categoriesInEnglish.map( (category, index) => {
+		return { "id": category.id, "name": wordsInSpanish[index] }
+	});
+
 	container.innerHTML = "";
-	
-	categories.forEach(category => {
+	categoriesInSpanish.forEach(category => {
 		const categoryContainer = document.createElement("div");
 			categoryContainer.classList.add("category-container");
 		
@@ -43,18 +53,73 @@ function createCategories(categories, container) {
 			});
 		
 		const categoryTitleText = document.createTextNode(category.name);				
-			
 		categoryTitle.appendChild(categoryTitleText);
 		categoryContainer.appendChild(categoryTitle);
 		container.appendChild(categoryContainer);
 	});
 }
 
+function showLoadingScreen(container) {
+	container.innerHTML = `
+		<img
+			src="./assets/loading-circle-v2softwhite.gif"
+			class="loading-screen"
+			style="
+				margin: 20px auto;
+				display: block;
+			"
+		/>
+	`;
+}
+
+function showLoadingScreen__toLeft(container) {
+	container.innerHTML = `
+		<img
+			src="./assets/loading-circle-v2softwhite.gif"
+			class="loading-screen"
+			style="
+				margin: 20px auto;
+				display: block;
+				padding-right: 25px;
+			"
+		/>
+	`;
+}
+
+function showBigLoadingScreen(container) {
+	container.insertAdjacentHTML(
+		"beforeend",
+		`<img
+			src="./assets/loading-circle-v2purple.gif"
+			class="loading-screen"
+			style="
+				height: 150px;
+				margin: 75px auto;
+				display: block;
+			"
+		/>`
+	);
+}
+
+function showTinyLoadingScreen(container) {
+	container.innerHTML = `
+		<img
+			src="./assets/loading-circle-v2softwhite.gif"
+			class="loading-screen"
+			style="
+				margin: 20px auto;
+				display: block;
+				height: 40px;
+			"
+		/>`
+}
 
 // Get Preview Trending Movies.
 async function getPreviewTrendingMovies() {
 	try {
 		trendingMoviesPreviewList.innerHTML = "";
+		showLoadingScreen__toLeft(trendingMoviesPreviewList);
+		
 		const { data } = await api("trending/movie/day");
 		const movies = data.results;
 		createMovies(movies, trendingMoviesPreviewList);
@@ -74,6 +139,9 @@ async function getPreviewTrendingMovies() {
 // Get Preview Categories.
 async function getPreviewCategories() {
 	try {
+		categoriesPreviewList.innerHTML = "";
+		showLoadingScreen(categoriesPreviewList);
+		
 		const { data } = await api("genre/movie/list");
 		const categories = data.genres;
 		createCategories(categories, categoriesPreviewList);
@@ -94,6 +162,8 @@ async function getPreviewCategories() {
 async function getTrendingMovies() {
 	try {
 		genericSection.innerHTML = "";
+		showLoadingScreen(genericSection);
+		
 		const { data } = await api("trending/movie/day");
 		const movies = data.results;
 		createMovies(movies, genericSection);
@@ -114,6 +184,8 @@ async function getTrendingMovies() {
 async function getMoviesByCategory(id) {
 	try {
 		genericSection.innerHTML = "";
+		showLoadingScreen(genericSection);
+		
 		const { data } = await api(`discover/movie?with_genres=${id}`);
 		const movies = data.results;
 		createMovies(movies, genericSection);
@@ -134,6 +206,8 @@ async function getMoviesByCategory(id) {
 async function getMoviesBySearch(searchedTerm) {
 	try {
 		genericSection.innerHTML = "";
+		showLoadingScreen(genericSection);
+		
 		const { data } = await api(`search/movie?query=${searchedTerm}`);
 		const movies = data.results;
 		createMovies(movies, genericSection);
@@ -153,21 +227,30 @@ async function getMoviesBySearch(searchedTerm) {
 // Get Movie By Id.
 async function getMovieById(id) {
 	try {
+		headerSection.style.background = `linear-gradient(180deg, rgba(0, 0, 0, 0.35) 19.27%, rgba(0, 0, 0, 0) 29.17%), #5c218a`;
+		showBigLoadingScreen(headerSection);
+		showLoadingScreen(movieDetailDescription);
+		showLoadingScreen__toLeft(relatedMoviesContainer);
+		showTinyLoadingScreen(movieDetailCategoriesList);
+		
 		const { data: movie } = await api(`movie/${id}`);
 		
-		headerSection.style.background = `
-			linear-gradient(180deg, rgba(0, 0, 0, 0.35) 19.27%, rgba(0, 0, 0, 0) 29.17%),
-			url(https://image.tmdb.org/t/p/w500/${movie.poster_path})`;
+		headerSection.removeChild(document.querySelector("header img.loading-screen"));
+		headerSection.style.background = `linear-gradient(180deg, rgba(0, 0, 0, 0.35) 19.27%, rgba(0, 0, 0, 0) 29.17%), url(https://image.tmdb.org/t/p/w500/${movie.poster_path}), #5c218a`;
 		movieDetailTitle.textContent = movie.title;
-		movieDetailDescription.textContent = movie.overview;
 		movieDetailScore.textContent = movie.vote_average.toFixed(1);
+		
+		const translationData = await translation.request(textToTranslate(movie.overview));
+		const overviewInSpanish = translationData.data.data.translations.translatedText;
+		movieDetailDescription.innerHTML = "";
+		movieDetailDescription.textContent = overviewInSpanish;
 		createCategories(movie.genres, movieDetailCategoriesList);
 		getRelatedMoviesById(id);
 		
 		console.group("Respuesta del Servidor (GET Movie By Id)");
 			console.log(movie);
 		console.groupEnd();
-		
+
 	} catch (error) {
 		console.group("Error (GET Movie By Id)");
 			console.error(error);
