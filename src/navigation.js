@@ -1,8 +1,14 @@
 "use strict";
 
-searchFormBtn.addEventListener("click", () => {location.hash = `#search=${searchFormInput.value.trim()}`});
 trendingBtn.addEventListener("click", () => {location.hash = "#trends"});
 arrowBtn.addEventListener("click", goBack);
+searchFormBtn.addEventListener("click", () => {
+	if (searchFormInput.value.trim() === "") {
+		alert ("Por favor ingrese algún término en la barra de búsqueda");
+	} else {
+		location.hash = `#search=${searchFormInput.value.trim()}`;
+	}
+});
 
 window.addEventListener("DOMContentLoaded", pageNavigation, false);
 window.addEventListener("hashchange", pageNavigation, false);
@@ -97,7 +103,7 @@ function navigateToMovieDetailsPage() {
 
 function navigateToSearchPage() {
 	console.log("Se cargó la vista para Búsqueda.");
-	
+		
 	headerSection.classList.remove("header-container--long");
 	headerSection.style.background = "";
 	arrowBtn.classList.remove("inactive");
@@ -110,10 +116,10 @@ function navigateToSearchPage() {
 	categoriesPreviewSection.classList.add("inactive");
 	genericSection.classList.remove("inactive");
 	movieDetailSection.classList.add("inactive");
-	
-	headerCategoryTitle.textContent = "Búsqueda";
-	const searchedTerm = location.hash.split("=")[1];
-	getMoviesBySearch(searchedTerm.trim());
+
+	const searchedTerm = location.hash.split("=")[1].trim();		
+	headerCategoryTitle.textContent = "Búsqueda";		
+	getMoviesBySearch(searchedTerm);
 }
 
 function navigateToTrendingPage() {
@@ -137,7 +143,22 @@ function navigateToTrendingPage() {
 }
 
 function navigateTo404Page() {
+	console.log("Se cargó la vista de Página no Encontrada.");
 	
+	headerSection.classList.remove("header-container--long");
+	headerSection.style.background = "";
+	arrowBtn.classList.remove("inactive");
+	arrowBtn.classList.remove("header-arrow--white");
+	headerTitle.classList.add("inactive");
+	headerCategoryTitle.classList.remove("inactive");
+	searchForm.classList.add("inactive");
+
+	trendingPreviewSection.classList.add("inactive");
+	categoriesPreviewSection.classList.add("inactive");
+	genericSection.classList.add("inactive");
+	movieDetailSection.classList.add("inactive");
+	
+	headerCategoryTitle.innerText = "Página no encontrada.";
 }
 
 // Navigation History
