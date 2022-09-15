@@ -33,15 +33,25 @@ function createMovies(movies, container) {
 async function createCategories(categoriesInEnglish, container) {
 
 	// Translation
-	const wordsInEnglish = categoriesInEnglish.map(category => category.name).join(" - ");;
-	const translationData = await translation.request(textToTranslate(wordsInEnglish));
-	const wordsInSpanish = translationData.data.data.translations.translatedText.split(" - ");
-	const categoriesInSpanish = categoriesInEnglish.map( (category, index) => {
-		return { "id": category.id, "name": wordsInSpanish[index] }
-	});
+	let categoriesToUse = [];
+	try {
+		const wordsInEnglish = categoriesInEnglish.map(category => category.name).join(" - ");;	
+		const translationData = await translation.request(textToTranslate(wordsInEnglish));
+		const wordsInSpanish = translationData.data.data.translations.translatedText.split(" - ");
+		const categoriesInSpanish = categoriesInEnglish.map( (category, index) => {
+			return { "id": category.id, "name": wordsInSpanish[index] }
+		});
+		categoriesToUse = categoriesInSpanish;
+	} catch (error) {
+		console.group("Error en la traducción de las categorías");
+			console.log(error.message);
+			console.error(error);
+		console.groupEnd();
+		categoriesToUse = categoriesInEnglish;
+	}
 
 	container.innerHTML = "";
-	categoriesInSpanish.forEach(category => {
+	categoriesToUse.forEach(category => {
 		const categoryContainer = document.createElement("div");
 			categoryContainer.classList.add("category-container");
 		
@@ -240,10 +250,22 @@ async function getMovieById(id) {
 		movieDetailTitle.textContent = movie.title;
 		movieDetailScore.textContent = movie.vote_average.toFixed(1);
 		
-		const translationData = await translation.request(textToTranslate(movie.overview));
-		const overviewInSpanish = translationData.data.data.translations.translatedText;
+		// Translation
+		let overviewToUse = "";
+		try {
+			const translationData = await translation.request(textToTranslate(movie.overview));
+			const overviewInSpanish = translationData.data.data.translations.translatedText;
+			overviewToUse = overviewInSpanish;
+		} catch (error) {
+			console.group("Error en la traducción de la descripción de la película");
+				console.log(error.message);
+				console.error(error);
+			console.groupEnd();
+			overviewToUse = movie.overview;
+		}
+		
 		movieDetailDescription.innerHTML = "";
-		movieDetailDescription.textContent = overviewInSpanish;
+		movieDetailDescription.textContent = overviewToUse;
 		createCategories(movie.genres, movieDetailCategoriesList);
 		getRelatedMoviesById(id);
 		
