@@ -36,10 +36,14 @@ function pageNavigation() {
 	document.body.scrollTop = 0;
 	document.documentElement.scrollTop = 0;
 	saveNavigationHistory();
+	resetCurrentPagination();
 }
 
+const consoleMessageStyle = "background-color: #2a0646; color: #fbfafb; font-weight: 800;";
+const consoleErrorMessageStyle = "background-color: red; color: white; font-weight: 800;";
+
 function navigateToHomePage() {
-	console.log("Se cargó la vista del Home.");
+	console.log("%cSe cargó la vista del Home.", consoleMessageStyle);
 	
 	headerSection.classList.remove("header-container--long");
 	headerSection.style.background = "";
@@ -59,7 +63,7 @@ function navigateToHomePage() {
 }
 
 function navigateToCategoriesPage() {
-	console.log("Se cargó la vista de Categoría.");
+	console.log("%cSe cargó la vista de Categoría.", consoleMessageStyle);
 	
 	headerSection.classList.remove("header-container--long");
 	headerSection.style.background = "";
@@ -81,7 +85,7 @@ function navigateToCategoriesPage() {
 }
 
 function navigateToMovieDetailsPage() {
-	console.log("Se cargó la vista de Detalles de una Película.");
+	console.log("%cSe cargó la vista de Detalles de una Película.", consoleMessageStyle);
 	
 	headerSection.classList.add("header-container--long");
 	// headerSection.style.background = "";
@@ -102,7 +106,7 @@ function navigateToMovieDetailsPage() {
 }
 
 function navigateToSearchPage() {
-	console.log("Se cargó la vista para Búsqueda.");
+	console.log("%cSe cargó la vista para Búsqueda.", consoleMessageStyle);
 		
 	headerSection.classList.remove("header-container--long");
 	headerSection.style.background = "";
@@ -123,7 +127,7 @@ function navigateToSearchPage() {
 }
 
 function navigateToTrendingPage() {
-	console.log("Se cargó la vista de Tendencias.");
+	console.log("%cSe cargó la vista de Tendencias.", consoleMessageStyle);
 	
 	headerSection.classList.remove("header-container--long");
 	headerSection.style.background = "";
@@ -143,7 +147,7 @@ function navigateToTrendingPage() {
 }
 
 function navigateTo404Page() {
-	console.log("Se cargó la vista de Página no Encontrada.");
+	console.log("%cSe cargó la vista de Página no Encontrada.", consoleMessageStyle);
 	
 	headerSection.classList.remove("header-container--long");
 	headerSection.style.background = "";
@@ -181,4 +185,35 @@ function goBack() {
 	}
 }
 
+// Infinite Scrolling
 
+let currentPagination = 1;
+let currentLimitPagination = null;
+let thereAreSomeRequestsInProcess = false;
+document.addEventListener("scroll", loadMoreMoviesByInfiniteScrolling);
+function loadMoreMoviesByInfiniteScrolling() {
+	const {scrollTop, scrollHeight, clientHeight} = document.documentElement;
+	const endOfScrollReached = (scrollTop+clientHeight) >= (scrollHeight-30);
+	if (endOfScrollReached && !thereAreSomeRequestsInProcess)  {
+		thereAreSomeRequestsInProcess = true;
+		
+		if (location.hash === "#trends") {
+			console.log(`Se llegó al final del scroll de la página ${currentPagination} en las tendencias.`);
+			getTrendingMovies(currentPagination+1);
+		}
+		
+		if (location.hash.startsWith("#search=")) {
+			console.log(`Se llegó al final del scroll de la página ${currentPagination} en la búsqueda.`);
+			const searchedTerm = location.hash.split("=")[1].trim();		
+			getMoviesBySearch(searchedTerm, currentPagination+1);
+		}
+		
+		if (location.hash.startsWith("#category=")) {
+			console.log(`Se llegó al final del scroll de la página ${currentPagination} en la categoría.`);
+			const categoryId = location.hash.split("=")[1].split("-")[0];
+			getMoviesByCategory(categoryId, currentPagination+1);
+		}
+	}
+}
+
+function resetCurrentPagination() {currentPagination = 1};

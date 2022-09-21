@@ -30,28 +30,9 @@ function createMovies(movies, container) {
 	});
 }
 
-async function createCategories(categoriesInEnglish, container) {
-
-	// Translation
-	let categoriesToUse = [];
-	try {
-		const wordsInEnglish = categoriesInEnglish.map(category => category.name).join(" - ");;	
-		const translationData = await translation.request(textToTranslate(wordsInEnglish));
-		const wordsInSpanish = translationData.data.data.translations.translatedText.split(" - ");
-		const categoriesInSpanish = categoriesInEnglish.map( (category, index) => {
-			return { "id": category.id, "name": wordsInSpanish[index] }
-		});
-		categoriesToUse = categoriesInSpanish;
-	} catch (error) {
-		console.group("Error en la traducción de las categorías");
-			console.log(error.message);
-			console.error(error);
-		console.groupEnd();
-		categoriesToUse = categoriesInEnglish;
-	}
-
+async function createCategories(categories, container) {
 	container.innerHTML = "";
-	categoriesToUse.forEach(category => {
+	categories.forEach(category => {
 		const categoryContainer = document.createElement("div");
 			categoryContainer.classList.add("category-container");
 		
@@ -248,24 +229,9 @@ async function getMovieById(id) {
 		headerSection.removeChild(document.querySelector("header img.loading-screen"));
 		headerSection.style.background = `linear-gradient(180deg, rgba(0, 0, 0, 0.35) 19.27%, rgba(0, 0, 0, 0) 29.17%), url(https://image.tmdb.org/t/p/w500/${movie.poster_path}), #5c218a`;
 		movieDetailTitle.textContent = movie.title;
-		movieDetailScore.textContent = movie.vote_average.toFixed(1);
-		
-		// Translation
-		let overviewToUse = "";
-		try {
-			const translationData = await translation.request(textToTranslate(movie.overview));
-			const overviewInSpanish = translationData.data.data.translations.translatedText;
-			overviewToUse = overviewInSpanish;
-		} catch (error) {
-			console.group("Error en la traducción de la descripción de la película");
-				console.log(error.message);
-				console.error(error);
-			console.groupEnd();
-			overviewToUse = movie.overview;
-		}
-		
+		movieDetailScore.textContent = movie.vote_average.toFixed(1);	
 		movieDetailDescription.innerHTML = "";
-		movieDetailDescription.textContent = overviewToUse;
+		movieDetailDescription.textContent = movie.overview;
 		createCategories(movie.genres, movieDetailCategoriesList);
 		getRelatedMoviesById(id);
 		
