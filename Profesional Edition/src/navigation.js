@@ -193,7 +193,7 @@ let thereAreSomeRequestsInProcess = false;
 document.addEventListener("scroll", loadMoreMoviesByInfiniteScrolling);
 function loadMoreMoviesByInfiniteScrolling() {
 	const {scrollTop, scrollHeight, clientHeight} = document.documentElement;
-	const endOfScrollReached = (scrollTop+clientHeight) >= (scrollHeight-100);
+	const endOfScrollReached = (scrollTop+clientHeight) >= (scrollHeight-500);
 	if (endOfScrollReached && !thereAreSomeRequestsInProcess)  {
 		thereAreSomeRequestsInProcess = true;
 		
