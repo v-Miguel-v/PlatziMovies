@@ -321,6 +321,7 @@ button {
 
 /* Generic List (search, trending & category) */
 .genericList-container {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;

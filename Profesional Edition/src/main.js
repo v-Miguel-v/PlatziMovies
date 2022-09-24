@@ -24,6 +24,7 @@ const lazyLoader = new IntersectionObserver((entries) => {
 
 function createMovies(movies, container, isTheFirstLoad = true) {
 	if (isTheFirstLoad) container.innerHTML = "";
+	if (!isTheFirstLoad) container.removeChild(document.querySelector("div.loading-screen"));
 	
 	movies.forEach(movie => {
 		const movieContainer = document.createElement("div");
@@ -88,6 +89,39 @@ function showMoviesLoadingScreen(container) {
 	    <div class="movie-container movie-container--loading"></div>
 	    <div class="movie-container movie-container--loading"></div>
 	`;
+}
+
+function showInfiniteScrollingMoviesLoadingScreen(container) {
+	container.insertAdjacentHTML(
+		"beforeend",
+		`<div class="loading-screen" style="width: 100%;">
+			<img
+				src="./assets/loading-circle-v2softwhite.gif"
+				class="loading-screen"
+				style="
+					margin: 20px auto;
+					display: block;
+					height: 40px;
+				"
+			/>
+		</div>`
+	);
+}
+
+function showInfiniteScrollingEndMessage(container) {
+	container.insertAdjacentHTML(
+		"beforeend",
+		`<div class="end-of-results"
+			style="
+				width: 100%;
+				position: absolute;
+				bottom: -30px;
+				left: 0;
+			"
+		>
+			<p style="text-align: center; color: var(--purple-medium-1);">Fin de los Resultados</p>
+		</div>`
+	);
 }
 
 function showCategoriesLoadingScreen(container) {
@@ -163,19 +197,22 @@ async function getTrendingMovies(page = 1) {
 			
 			const { data } = await api(`trending/movie/day?page=${page}`);
 			const movies = data.results;
+			currentLimitPagination = 5;
 			createMovies(movies, genericSection, isTheFirstLoad);
-			currentLimitPagination = 5;	
 
 			console.group("Respuestas del Servidor (GET Trending Movies)");
 				console.log(data);
 			console.groupEnd();
 		} else {
 			if (page <= currentLimitPagination) {
+				showInfiniteScrollingMoviesLoadingScreen(genericSection);
+				
 				currentPagination = page;
 				const { data } = await api(`trending/movie/day?page=${page}`);
 				const movies = data.results;
-				createMovies(movies, genericSection, isTheFirstLoad);
 				currentLimitPagination = 5;
+				createMovies(movies, genericSection, isTheFirstLoad);
+				if (page === currentLimitPagination) showInfiniteScrollingEndMessage(genericSection);
 				
 				console.group("Respuestas del Servidor (GET Trending Movies by Scrolling)");
 					console.log(data);
@@ -205,19 +242,23 @@ async function getMoviesBySearch(searchedTerm, page = 1) {
 			
 			const { data } = await api(`search/movie?query=${searchedTerm}&page=${page}`);
 			const movies = data.results;
-			createMovies(movies, genericSection, isTheFirstLoad);
 			currentLimitPagination = data.total_pages;	
+			createMovies(movies, genericSection, isTheFirstLoad);
+			if (page === currentLimitPagination) showInfiniteScrollingEndMessage(genericSection);
 
 			console.group("Respuestas del Servidor (GET Movies By Search)");
 				console.log(data);
 			console.groupEnd();
 		} else {
 			if (page <= currentLimitPagination) {
+				showInfiniteScrollingMoviesLoadingScreen(genericSection);
+				
 				currentPagination = page;
 				const { data } = await api(`search/movie?query=${searchedTerm}&page=${page}`);
 				const movies = data.results;
-				createMovies(movies, genericSection, isTheFirstLoad);
 				currentLimitPagination = data.total_pages;
+				createMovies(movies, genericSection, isTheFirstLoad);
+				if (page === currentLimitPagination) showInfiniteScrollingEndMessage(genericSection);
 				
 				console.group("Respuestas del Servidor (GET Movies By Search by Scrolling)");
 					console.log(data);
@@ -248,19 +289,23 @@ async function getMoviesByCategory(category, page = 1) {
 			
 			const { data } = await api(`discover/movie?with_genres=${category}&page=${page}`);
 			const movies = data.results;
+			currentLimitPagination = data.total_pages;
 			createMovies(movies, genericSection, isTheFirstLoad);
-			currentLimitPagination = data.total_pages;	
+			if (page === currentLimitPagination) showInfiniteScrollingEndMessage(genericSection);
 
 			console.group("Respuestas del Servidor (GET Movies By Category)");
 				console.log(data);
 			console.groupEnd();
 		} else {
 			if (page <= currentLimitPagination) {
+				showInfiniteScrollingMoviesLoadingScreen(genericSection);
+				
 				currentPagination = page;
 				const { data } = await api(`discover/movie?with_genres=${category}&page=${page}`);
 				const movies = data.results;
-				createMovies(movies, genericSection, isTheFirstLoad);
 				currentLimitPagination = data.total_pages;
+				createMovies(movies, genericSection, isTheFirstLoad);
+				if (page === currentLimitPagination) showInfiniteScrollingEndMessage(genericSection);
 				
 				console.group("Respuestas del Servidor (GET Movies By Category by Scrolling)");
 					console.log(data);
@@ -269,19 +314,6 @@ async function getMoviesByCategory(category, page = 1) {
 		}
 		
 		thereAreSomeRequestsInProcess = false;
-		
-		/*
-		genericSection.innerHTML = "";
-		showMoviesLoadingScreen(genericSection);
-		
-		const { data } = await api(`discover/movie?with_genres=${category}&page=${page}`);
-		const movies = data.results;
-		createMovies(movies, genericSection);
-		
-		console.group("Respuestas del Servidor (GET Movies By Category)");
-			console.log(data);
-		console.groupEnd();
-		*/
 		
 	} catch (error) {
 		console.group("%cError (GET Movies By Category)", consoleErrorMessageStyle);
