@@ -35,13 +35,13 @@
   --dark-cream: #cdab72;
   
   --pale-purple: #f1e3e9;
-  --purple: #f0c4d7;
+  --purple: #c167e1;
   --dark-purple: #643d50;
   
   --aqua: #4afde7;
   --dark-aqua: #008e7c;
   
-  --pinky: #c167e1;
+  --pinky: #f0c4d7;
   --goldy: #ffdc1c;
   --reder: #f20f3a;
 
@@ -117,19 +117,20 @@ button {
 
 
 /* Shared */
-.header-container, .trendingPreview-header, .categoriesPreview-container {
+.header-container, .trendingPreview-header, .categoriesPreview-container, .likedPreview-header {
   padding: 0 24px;
 }
 
-.trendingPreview-container, .categoriesPreview-container, footer {
+.trendingPreview-container, .categoriesPreview-container, .likedPreview-container, footer {
   margin-top: 48px;
 }
 
-.trendingPreview-header, .categoriesPreview-title {
+.trendingPreview-header, .categoriesPreview-title, .likedPreview-header {
   margin-bottom: 24px;
 }
 
 .movie-container {
+  position: relative;
   cursor: pointer;
   min-height: 175px;
 }
@@ -153,9 +154,41 @@ button {
   animation-delay: .4s;
 }
 
-
 .movie-img {
   border-radius: 8px;
+}
+
+.movie-btn {
+  cursor: pointer;
+  position: absolute;
+  top: 5px;
+  right: 3px;
+  height: 30px;
+  width: 30px;
+  border-radius: 30px;
+  padding: 0;
+  margin: 0;
+  background-color: #ffffff30;
+  color: #ffffff30;
+  
+  
+  background-image: url("../assets/sprite-animation-like-btn.webp");
+  background-size: 1450px 50px;
+  background-position: -9.6px -9px;
+}
+.movie-btn--liked {  
+  background-color: #5C218AB0; /* background-color: var(--purple-medium-3); */
+  box-shadow: 0px 0px 10px 2px var(--purple);
+  color: var(--purple);
+  
+  
+  
+  animation-name: like;
+  animation-duration: 0.9s;
+  animation-timing-function: steps(28);
+  /* background-position: -2800px 0; */
+  /* background-position: right; */
+  animation-fill-mode: forwards;
 }
 
 .categoriesPreview-list, .categories-list {
@@ -221,20 +254,24 @@ button {
 }
 
 
-/* Trending */
-.trendingPreview-header {
+/* Preview Trending & Preview Liked */
+.trendingPreview-header,
+.likedPreview-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.trendingPreview-btn {
+.trendingPreview-btn,
+.likedPreview-btn {
   border-radius: 8px;
   height: 32px;
   width: 72px;
 }
+.likedPreview-btn {width: 80px;}
 
-.trendingPreview-movieList {
+.trendingPreview-movieList,
+.likedPreview-movieList {
   overflow-x: scroll;
   overflow-y: hidden;
   white-space: nowrap;
@@ -243,12 +280,14 @@ button {
   padding-bottom: 16px;
 }
 
-.trendingPreview-movieList .movie-container {
+.trendingPreview-movieList .movie-container,
+.likedPreview-movieList .movie-container {
   display: inline-block;
   margin-right: 8px;
 }
 
-.trendingPreview-movieList .movie-container .movie-img {
+.trendingPreview-movieList .movie-container .movie-img,
+.likedPreview-movieList .movie-container .movie-img {
   height: 225px;
   min-height: 225px;
   max-height: 225px;
@@ -475,4 +514,37 @@ footer {
   50% {
     opacity: 0%;
   }
+}
+
+.test-btn {
+    position: absolute;
+    cursor: pointer;
+    top: 5px;
+    right: 10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 30px;
+    background-image: url("../assets/sprite-animation-like-btn.webp");
+    background-size: 1450px 50px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.test-btn--liked {
+    animation-name: like;
+    animation-duration: 0.8s;
+    animation-timing-function: steps(28);
+    /* background-position: -2800px 0; */
+    /* background-position: right; */
+    animation-fill-mode: forwards;
+}
+
+@keyframes like {
+    0% {
+        background-position: -9.6px -9px;
+    }
+    100% {
+        /* background-position: -2800px 0; */
+        background-position: -1410px -9px;;
+    }
 }

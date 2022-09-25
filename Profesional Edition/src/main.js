@@ -1,5 +1,7 @@
 "use strict";
 
+/* Data. */
+
 const api = axios.create({
 	baseURL: "https://api.themoviedb.org/3",
 	headers: {
@@ -7,11 +9,29 @@ const api = axios.create({
 	},
 	params: {
 		api_key: "42ab15e6157c1171ff8cab144d9bb023",
-		language: "es-VE"
+		language: "es-MX"
 	}
 });
 
-// Helpers.
+function addOrRemoveLikedMovie(movie) {
+	const movieTag = `movie-${movie.id}`;
+	
+	if (isInLikedMovies(movieTag)) { // Remove
+		console.log(`Se ha eliminado la película "${movie.title}" de la Sección de Favoritos.`);
+		localStorage.removeItem(movieTag);
+		if (location.hash === "#liked") { /*loadLikedMovies();*/ }
+		if (location.hash === "#home") {
+			loadPreviewLikedMovies();
+			updateBtnsStatus(movieTag);
+		}
+	} else { // Add
+		console.log(`Se ha añadido la película "${movie.title}" a la Sección de Favoritos.`);
+		localStorage.setItem(movieTag, JSON.stringify(movie));
+		if (location.hash === "#home") { loadPreviewLikedMovies(); }
+	}
+}
+
+/* Helpers. */
 
 const lazyLoader = new IntersectionObserver((entries) => {
 	entries.forEach((entry) => {
@@ -22,19 +42,30 @@ const lazyLoader = new IntersectionObserver((entries) => {
 	});
 });
 
+function updateBtnsStatus(movieTag) {
+	const btn = document.querySelector(`.trendingPreview-movieList .${movieTag} .movie-btn--liked`);
+	if (btn) btn.classList.toggle("movie-btn--liked");
+}
+
+function isInLikedMovies(movieTag) {
+	return Boolean(localStorage.getItem(movieTag));
+}
+
 function createMovies(movies, container, isTheFirstLoad = true) {
 	if (isTheFirstLoad) container.innerHTML = "";
 	if (!isTheFirstLoad) container.removeChild(document.querySelector("div.loading-screen"));
 	
 	movies.forEach(movie => {
+		const movieTag = `movie-${movie.id}`;
 		const movieContainer = document.createElement("div");
 			movieContainer.classList.add("movie-container");
-			movieContainer.addEventListener("click", () => {location.hash = `#movie=${movie.id}-${movie.title}`});
+			movieContainer.classList.add(movieTag);
 		
 		const movieImg = document.createElement("img");
 			movieImg.classList.add("movie-img");
 			movieImg.setAttribute("alt", movie.title);
 			movieImg.setAttribute("data-src", `https://image.tmdb.org/t/p/w300/${movie.poster_path}`);
+			movieImg.addEventListener("click", () => {location.hash = `#movie=${movie.id}-${movie.title}`});
 			movieImg.addEventListener("error", () => {
 				movieImg.src = "./assets/noimage.png";
 				const noImageTitle = document.createElement("span");
@@ -44,8 +75,17 @@ function createMovies(movies, container, isTheFirstLoad = true) {
 				
 			});
 
+		const movieBtn = document.createElement("button");
+			movieBtn.classList.add("movie-btn");
+			if (isInLikedMovies(movieTag)) movieBtn.classList.add("movie-btn--liked");
+			movieBtn.addEventListener("click", () => {
+				movieBtn.classList.toggle("movie-btn--liked");
+				addOrRemoveLikedMovie(movie);
+			});
+
 		lazyLoader.observe(movieImg);
 		movieContainer.appendChild(movieImg);
+		movieContainer.appendChild(movieBtn);
 		container.appendChild(movieContainer);
 	});
 }
@@ -70,7 +110,7 @@ function createCategories(categories, container) {
 	});
 }
 
-// Loading Screens
+/* Loading Screens */
 
 function showScrollMoviesLoadingScreen(container) {
 	container.innerHTML = `
@@ -146,6 +186,8 @@ function showPosterLoadingScreen(container) {
 		/>`
 	);
 }
+
+/* API Requests */
 
 // Get Preview Trending Movies.
 async function getPreviewTrendingMovies() {
@@ -339,10 +381,9 @@ async function getMovieById(id) {
 		// Loading Screens
 		showPosterLoadingScreen(headerSection);
 		showScrollMoviesLoadingScreen(relatedMoviesContainer);
-		/*showDescriptionLoadingScreen(movieDetailDescription);*/
 		showCategoriesLoadingScreen(movieDetailCategoriesList);
 		
-		// API Requests
+		// API Request
 		const { data: movie } = await api(`movie/${id}`);
 		
 		headerSection.removeChild(document.querySelector("header img.loading-screen"));
@@ -394,5 +435,33 @@ async function getRelatedMoviesById(id) {
 			console.error(error);
 		console.groupEnd();
 		alert("Ocurrió un Error en el GET de las Películas Relacionadas.");
+	}
+}
+
+/* Local Storage Requests */
+
+function loadPreviewLikedMovies() {
+	try {
+		const isEmpty = localStorage.length === 0;
+		
+		if (isEmpty) {
+			likedMoviesPreviewList.innerHTML = "";
+			console.log("La Sección de Favoritos está Vacía.")
+		} else {
+			const data = Object.values(localStorage);
+			const results = data;
+			const movies = results.map(movie => {return JSON.parse(movie)});
+			createMovies(movies, likedMoviesPreviewList);
+		
+			console.groupCollapsed("Respuestas del LocalStorage (LOAD Preview Liked Movies)");
+				console.log(localStorage);
+			console.groupEnd();
+		}
+		
+	} catch (error) {
+		console.group("%cError (LOAD Preview Liked Movies from LocalStorage)", consoleErrorMessageStyle);
+			console.error(error);
+		console.groupEnd();
+		alert("Ocurrió un Error en el LOAD del Preview de las Películas Favoritas desde el LocalStorage.");
 	}
 }

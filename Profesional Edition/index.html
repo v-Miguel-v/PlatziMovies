@@ -8,14 +8,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@700;800&family=Red+Hat+Display:wght@400;500&display=swap" rel="stylesheet" />
+  
+  <link rel="shortcut icon" type="image/png" href="./assets/platzimoviespro-logo.png"/>
   <link rel="stylesheet" href="./styles/app.css" />
 
-  <title>PlatziMovies</title>
+  <title>PlatziMovies Pro</title>
 </head>
 <body>
   <header id="header" class="header-container">
     <span class="header-arrow inactive">&lt;</span>
-    <h1 class="header-title">PlatziMovies</h1>
+    <h1 class="header-title">PlatziMovies Pro</h1>
     <h1 class="header-title header-title--categoryView inactive">Categoría</h1>
 
     <form id="searchForm" class="header-searchForm">
@@ -60,6 +62,28 @@
 	  <!--
       <div class="category-container">
         <h3 id="id28" class="category-title">Romance</h3>
+      </div>
+	  -->
+    </article>
+  </section>
+
+  <section id="likedPreview" class="likedPreview-container">
+    <div class="likedPreview-header">
+      <h2 class="likedPreview-title">Favoritos</h2>
+      <button class="likedPreview-btn">Ver todos</button>
+    </div>
+
+    <article class="likedPreview-movieList">
+	  <div class="movie-container movie-container--loading"></div>
+	  <div class="movie-container movie-container--loading"></div>
+	  <div class="movie-container movie-container--loading"></div>
+	  <!--
+	  <div class="movie-container">
+        <img
+          src="./assets/loading-circle-v2white.gif"
+          class="movie-img"
+          alt="Nombre de la Película"
+        />
       </div>
 	  -->
     </article>
@@ -120,20 +144,12 @@
     </article>
   </section>
 
-  <footer>Diseño original hecho por <a id="test" href="#home">@juandc</a></footer>
+  <footer>Diseño original hecho por @juandc</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="./src/main.js"></script>
   <script src="./src/nodes.js"></script>
   <script src="./src/weird-issues.js"></script>
   <script src="./src/navigation.js"></script>
-  <script>
-	const test = document.getElementById("test");
-	test.addEventListener("click", () => {
-    alert(`a + b = c
-${document.documentElement.clientHeight} + ${document.documentElement.scrollTop} = ${document.documentElement.scrollHeight}
-${document.documentElement.clientHeight + document.documentElement.scrollTop} = ${document.documentElement.scrollHeight}`)
-  });
-  </script>
 </body>
 </html>

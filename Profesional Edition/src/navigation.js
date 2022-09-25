@@ -1,5 +1,6 @@
 "use strict";
 
+likedPreviewBtn.addEventListener("click", () => {location.hash = "#liked"});
 trendingBtn.addEventListener("click", () => {location.hash = "#trends"});
 arrowBtn.addEventListener("click", goBack);
 searchFormBtn.addEventListener("click", () => {
@@ -24,6 +25,8 @@ function pageNavigation() {
 		navigateToMovieDetailsPage();
 	} else if (location.hash.startsWith("#category=")) {
 		navigateToCategoriesPage();
+	} else if (location.hash === "#liked") {
+		navigateToLikedPage();
 	} else if (location.hash === "") {
 		location.hash = "#home";
 	} else if (location.hash === "#home") {
@@ -55,11 +58,13 @@ function navigateToHomePage() {
 
 	trendingPreviewSection.classList.remove("inactive");
 	categoriesPreviewSection.classList.remove("inactive");
+	likedPreviewSection.classList.remove("inactive");
 	genericSection.classList.add("inactive");
 	movieDetailSection.classList.add("inactive");
 	
 	getPreviewTrendingMovies();
 	getPreviewCategories();
+	loadPreviewLikedMovies();
 }
 
 function navigateToCategoriesPage() {
@@ -75,6 +80,7 @@ function navigateToCategoriesPage() {
 
 	trendingPreviewSection.classList.add("inactive");
 	categoriesPreviewSection.classList.add("inactive");
+	likedPreviewSection.classList.add("inactive");
 	genericSection.classList.remove("inactive");
 	movieDetailSection.classList.add("inactive");
 	
@@ -88,7 +94,6 @@ function navigateToMovieDetailsPage() {
 	console.log("%cSe cargó la vista de Detalles de una Película.", consoleMessageStyle);
 	
 	headerSection.classList.add("header-container--long");
-	// headerSection.style.background = "";
 	arrowBtn.classList.remove("inactive");
 	arrowBtn.classList.add("header-arrow--white");
 	headerTitle.classList.add("inactive");
@@ -97,6 +102,7 @@ function navigateToMovieDetailsPage() {
 
 	trendingPreviewSection.classList.add("inactive");
 	categoriesPreviewSection.classList.add("inactive");
+	likedPreviewSection.classList.add("inactive");
 	genericSection.classList.add("inactive");
 	movieDetailSection.classList.remove("inactive");
 	
@@ -118,6 +124,7 @@ function navigateToSearchPage() {
 
 	trendingPreviewSection.classList.add("inactive");
 	categoriesPreviewSection.classList.add("inactive");
+	likedPreviewSection.classList.add("inactive");
 	genericSection.classList.remove("inactive");
 	movieDetailSection.classList.add("inactive");
 
@@ -139,11 +146,33 @@ function navigateToTrendingPage() {
 
 	trendingPreviewSection.classList.add("inactive");
 	categoriesPreviewSection.classList.add("inactive");
+	likedPreviewSection.classList.add("inactive");
 	genericSection.classList.remove("inactive");
 	movieDetailSection.classList.add("inactive");
 	
 	headerCategoryTitle.textContent = "Tendencias";
 	getTrendingMovies();
+}
+
+function navigateToLikedPage() {
+	console.log("%cSe cargó la vista de Favoritos.", consoleMessageStyle);
+	
+	headerSection.classList.remove("header-container--long");
+	headerSection.style.background = "";
+	arrowBtn.classList.remove("inactive");
+	arrowBtn.classList.remove("header-arrow--white");
+	headerTitle.classList.add("inactive");
+	headerCategoryTitle.classList.remove("inactive");
+	searchForm.classList.add("inactive");
+
+	trendingPreviewSection.classList.add("inactive");
+	categoriesPreviewSection.classList.add("inactive");
+	likedPreviewSection.classList.add("inactive");
+	genericSection.classList.remove("inactive");
+	movieDetailSection.classList.add("inactive");
+	
+	headerCategoryTitle.textContent = "Favoritos";
+	// getLikedMovies();
 }
 
 function navigateTo404Page() {
@@ -159,6 +188,7 @@ function navigateTo404Page() {
 
 	trendingPreviewSection.classList.add("inactive");
 	categoriesPreviewSection.classList.add("inactive");
+	likedPreviewSection.classList.add("inactive");
 	genericSection.classList.add("inactive");
 	movieDetailSection.classList.add("inactive");
 	
