@@ -19,7 +19,7 @@ function addOrRemoveLikedMovie(movie) {
 	if (isInLikedMovies(movieTag)) { // Remove
 		console.log(`Se ha eliminado la película "${movie.title}" de la Sección de Favoritos.`);
 		localStorage.removeItem(movieTag);
-		if (location.hash === "#liked") { /*loadLikedMovies();*/ }
+		if (location.hash === "#liked") { loadLikedMovies(); }
 		if (location.hash === "#home") {
 			loadPreviewLikedMovies();
 			updateBtnsStatus(movieTag);
@@ -148,22 +148,6 @@ function showInfiniteScrollingMoviesLoadingScreen(container) {
 	);
 }
 
-function showInfiniteScrollingEndMessage(container) {
-	container.insertAdjacentHTML(
-		"beforeend",
-		`<div class="end-of-results"
-			style="
-				width: 100%;
-				position: absolute;
-				bottom: -30px;
-				left: 0;
-			"
-		>
-			<p style="text-align: center; color: var(--purple-medium-1);">Fin de los Resultados</p>
-		</div>`
-	);
-}
-
 function showCategoriesLoadingScreen(container) {
 	container.innerHTML = `
 	  <div class="category-container category-container--loading"></div>
@@ -185,6 +169,80 @@ function showPosterLoadingScreen(container) {
 			"
 		/>`
 	);
+}
+
+/* Messages */
+
+function showInfiniteScrollingEndMessage(container) {
+	container.insertAdjacentHTML(
+		"beforeend",
+		`<div class="end-message"
+			style="
+				width: 100%;
+				position: absolute;
+				bottom: -30px;
+				left: 0;
+			"
+		>
+			<p style="text-align: center; color: var(--purple-medium-1);">Fin de los Resultados</p>
+		</div>`
+	);
+}
+
+function showNoResultsFoundMessage(container, searchedTerm) {
+	container.insertAdjacentHTML(
+		"beforeend",
+		`<div class="no-results-found-message" style="width: 100%;">
+			<p style="text-align: center; color: var(--purple-medium-1);">
+				No se encontraron resultados de la búsqueda: "${decodeURI(searchedTerm)}".
+			</p>
+		</div>`
+	);
+}
+
+function showEmptyLikedSectionMessage() {
+	genericSection.insertAdjacentHTML(
+		"beforeend",
+		`<div class="empty-section-message" style="width: 100%;">
+			<p style="text-align: center; color: var(--purple-medium-1);">
+				No tienes películas en favoritos
+				<br>
+				Añade la primera con el botón "❤"
+			</p>
+		</div>`
+	);
+}
+
+function showEmptyPreviewLikedSectionMessage() {
+	if (!document.querySelector("#likedPreview .empty-section-message")) {
+		likedPreviewSection.insertAdjacentHTML(
+			"beforeend",
+			`<div class="empty-section-message"
+				style="
+					width: 100%;
+					position: absolute;
+					bottom: 100px;
+					left: 0;
+					padding: 0px 25px;
+				"
+			>
+				<p style="
+					text-align: center;
+					color: var(--purple-medium-1);
+				">
+					No tienes películas en favoritos
+					<br>
+					Añade la primera con el botón "❤"
+				</p>
+			</div>`
+		);
+	}
+}
+
+function removeEmptyPreviewLikedSectionMessage() {
+	if (document.querySelector("#likedPreview .empty-section-message")) {
+		likedPreviewSection.removeChild(document.querySelector("#likedPreview .empty-section-message"));
+	}
 }
 
 /* API Requests */
@@ -287,6 +345,7 @@ async function getMoviesBySearch(searchedTerm, page = 1) {
 			currentLimitPagination = data.total_pages;	
 			createMovies(movies, genericSection, isTheFirstLoad);
 			if (page === currentLimitPagination) showInfiniteScrollingEndMessage(genericSection);
+			if (data.total_results === 0) showNoResultsFoundMessage(genericSection, searchedTerm);
 
 			console.group("Respuestas del Servidor (GET Movies By Search)");
 				console.log(data);
@@ -440,17 +499,24 @@ async function getRelatedMoviesById(id) {
 
 /* Local Storage Requests */
 
+// Load Preview Liked Movies
 function loadPreviewLikedMovies() {
 	try {
 		const isEmpty = localStorage.length === 0;
 		
 		if (isEmpty) {
 			likedMoviesPreviewList.innerHTML = "";
-			console.log("La Sección de Favoritos está Vacía.")
+			showEmptyPreviewLikedSectionMessage();
+			
+			console.log("La Sección de Favoritos está Vacía.");
+			console.groupCollapsed("Respuestas del LocalStorage (LOAD Preview Liked Movies)");
+					console.log(localStorage);
+			console.groupEnd();
 		} else {
 			const data = Object.values(localStorage);
 			const results = data;
 			const movies = results.map(movie => {return JSON.parse(movie)});
+			removeEmptyPreviewLikedSectionMessage();
 			createMovies(movies, likedMoviesPreviewList);
 		
 			console.groupCollapsed("Respuestas del LocalStorage (LOAD Preview Liked Movies)");
@@ -463,5 +529,61 @@ function loadPreviewLikedMovies() {
 			console.error(error);
 		console.groupEnd();
 		alert("Ocurrió un Error en el LOAD del Preview de las Películas Favoritas desde el LocalStorage.");
+	}
+}
+
+// Load Liked Movies.
+async function loadLikedMovies(page = 1) {
+	try {
+		thereAreSomeRequestsInProcess = true;
+		const isTheFirstLoad = (page === 1);
+		
+		if (isTheFirstLoad) {
+			genericSection.innerHTML = "";
+			const isEmpty = localStorage.length === 0;
+			
+			if (isEmpty) {
+				showEmptyLikedSectionMessage();
+				
+				console.log("La Sección de Favoritos está Vacía.");
+				console.groupCollapsed("Respuestas del LocalStorage (LOAD Liked Movies)");
+					console.log(localStorage);
+				console.groupEnd();
+			} else {
+				const data = Object.values(localStorage);
+				const results = data;
+				const movies = results.map(movie => {return JSON.parse(movie)});
+				// currentLimitPagination = 5;
+				createMovies(movies, genericSection, isTheFirstLoad);
+			
+				console.groupCollapsed("Respuestas del LocalStorage (LOAD Liked Movies)");
+					console.log(localStorage);
+				console.groupEnd();
+			}
+			
+		} else {
+			if (page <= currentLimitPagination) {
+				showInfiniteScrollingMoviesLoadingScreen(genericSection);
+				
+				currentPagination = page;
+				const { data } = await api(`trending/movie/day?page=${page}`);
+				const movies = data.results;
+				currentLimitPagination = 5;
+				createMovies(movies, genericSection, isTheFirstLoad);
+				if (page === currentLimitPagination) showInfiniteScrollingEndMessage(genericSection);
+				
+				console.group("Respuestas del Servidor (GET Trending Movies by Scrolling)");
+					console.log(data);
+				console.groupEnd();
+			}
+		}
+		
+		thereAreSomeRequestsInProcess = false;
+		
+	} catch (error) {
+		console.group("%cError (LOAD Liked Movies from LocalStorage)", consoleErrorMessageStyle);
+			console.error(error);
+		console.groupEnd();
+		alert("Ocurrió un Error en el LOAD de las Películas en Favoritas desde el LocalStorage.");
 	}
 }

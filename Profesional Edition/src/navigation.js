@@ -172,7 +172,7 @@ function navigateToLikedPage() {
 	movieDetailSection.classList.add("inactive");
 	
 	headerCategoryTitle.textContent = "Favoritos";
-	// getLikedMovies();
+	loadLikedMovies();
 }
 
 function navigateTo404Page() {
@@ -230,6 +230,11 @@ function loadMoreMoviesByInfiniteScrolling() {
 		if (location.hash === "#trends") {
 			console.log(`Se llegó al final del scroll de la página ${currentPagination} en las tendencias.`);
 			getTrendingMovies(currentPagination+1);
+		}
+		
+		if (location.hash === "#liked") {
+			console.log(`Se llegó al final del scroll de la página ${currentPagination} en los favoritos.`);
+			loadLikedMovies(currentPagination+1);
 		}
 		
 		if (location.hash.startsWith("#search=")) {
