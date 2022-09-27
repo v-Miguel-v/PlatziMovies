@@ -555,13 +555,14 @@ async function loadLikedMovies(page = 1) {
 				const movies = results.map(movie => {return JSON.parse(movie)});
 				// currentLimitPagination = 5;
 				createMovies(movies, genericSection, isTheFirstLoad);
+				showInfiniteScrollingEndMessage(genericSection);
 			
 				console.groupCollapsed("Respuestas del LocalStorage (LOAD Liked Movies)");
 					console.log(localStorage);
 				console.groupEnd();
 			}
 			
-		} else {
+		}/* else {
 			if (page <= currentLimitPagination) {
 				showInfiniteScrollingMoviesLoadingScreen(genericSection);
 				
@@ -578,7 +579,7 @@ async function loadLikedMovies(page = 1) {
 			}
 		}
 		
-		thereAreSomeRequestsInProcess = false;
+		thereAreSomeRequestsInProcess = false;*/
 		
 	} catch (error) {
 		console.group("%cError (LOAD Liked Movies from LocalStorage)", consoleErrorMessageStyle);
